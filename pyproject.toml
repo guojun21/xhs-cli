@@ -1,7 +1,7 @@
 [project]
-name = "xhs-mcp-silent"
+name = "xhs-cli"
 version = "0.4.0"
-description = "Silent Xiaohongshu CLI that reuses Chrome cookies on macOS without Playwright or Chromium automation."
+description = "Xiaohongshu CLI that reuses Chrome cookies on macOS without Playwright or Chromium automation."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -11,7 +11,7 @@ dependencies = [
 ]
 
 [project.scripts]
-xhs-silent = "xhs_mcp_silent.__main__:main"
+xhs-cli = "xhs_cli.__main__:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -19,11 +19,11 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build]
 include = [
-    "xhs_mcp_silent/vendor/xhsvm.js",
+    "xhs_cli/vendor/xhsvm.js",
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["xhs_mcp_silent"]
+packages = ["xhs_cli"]
 
 [dependency-groups]
 dev = [

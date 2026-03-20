@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from xhs_mcp_silent.browser import ChromeLoginLauncher
+from xhs_cli.browser import ChromeLoginLauncher
 
 
 def test_open_homepage_uses_explicit_user_data_dir_and_profile(monkeypatch) -> None:

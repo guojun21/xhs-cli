@@ -11,7 +11,7 @@ from typing import Any, TextIO
 
 from .browser import ChromeLoginLauncher
 from .cookie_resolver import ChromeCookieResolver, DEFAULT_PROFILE
-from .models import CommentItem, CommentPage, NoteDetail, NoteSummary, XhsSilentError
+from .models import CommentItem, CommentPage, NoteDetail, NoteSummary, XhsCliError
 from .profile_resolver import ChromeProfileResolver
 from .xhs_api import XhsApi
 
@@ -21,14 +21,14 @@ HELP_TOPICS = {
     "overview": {
         "summary": "What this CLI does and the recommended workflow.",
         "body": [
-            "xhs-silent is a local Xiaohongshu CLI for macOS.",
+            "xhs-cli is a local Xiaohongshu CLI for macOS.",
             "It reuses Chrome cookies, signs requests with x-s/x-t, and never starts Playwright or Chromium automation.",
             "",
             "Recommended workflow:",
-            "1. xhs-silent check-cookie",
-            "2. xhs-silent search \"关键词\" --limit 5",
-            "3. xhs-silent note \"<搜索结果里的完整 URL>\"",
-            "4. xhs-silent comments \"<搜索结果里的完整 URL>\" --limit 5",
+            "1. xhs-cli check-cookie",
+            "2. xhs-cli search \"关键词\" --limit 5",
+            "3. xhs-cli note \"<搜索结果里的完整 URL>\"",
+            "4. xhs-cli comments \"<搜索结果里的完整 URL>\" --limit 5",
             "",
             f"Default Chrome profile: {DEFAULT_PROFILE}",
         ],
@@ -40,8 +40,8 @@ HELP_TOPICS = {
             "If the cookie is missing, expired, or only a guest session, the CLI will try to open Xiaohongshu in Chrome for login.",
             "",
             "Example:",
-            "xhs-silent check-cookie",
-            "xhs-silent --json check-cookie",
+            "xhs-cli check-cookie",
+            "xhs-cli --json check-cookie",
         ],
     },
     "login": {
@@ -51,8 +51,8 @@ HELP_TOPICS = {
             "The command explicitly passes --user-data-dir and --profile-directory so the correct profile is used.",
             "",
             "Example:",
-            "xhs-silent login",
-            "xhs-silent login --url https://www.xiaohongshu.com/explore",
+            "xhs-cli login",
+            "xhs-cli login --url https://www.xiaohongshu.com/explore",
         ],
     },
     "search": {
@@ -62,8 +62,8 @@ HELP_TOPICS = {
             "Search results include full note URLs with xsec_token. Feed those URLs into note/comments.",
             "",
             "Example:",
-            "xhs-silent search \"深圳 咖啡\" --limit 5",
-            "xhs-silent --json search \"深圳 约会 餐厅\" --limit 10",
+            "xhs-cli search \"深圳 咖啡\" --limit 5",
+            "xhs-cli --json search \"深圳 约会 餐厅\" --limit 10",
         ],
     },
     "note": {
@@ -72,8 +72,8 @@ HELP_TOPICS = {
             "Use the full URL returned by search. The URL must include xsec_token.",
             "",
             "Example:",
-            "xhs-silent note \"https://www.xiaohongshu.com/explore/...?...\"",
-            "xhs-silent --json note \"https://www.xiaohongshu.com/explore/...?...\"",
+            "xhs-cli note \"https://www.xiaohongshu.com/explore/...?...\"",
+            "xhs-cli --json note \"https://www.xiaohongshu.com/explore/...?...\"",
         ],
     },
     "comments": {
@@ -83,8 +83,8 @@ HELP_TOPICS = {
             "JSON mode includes cursor, has_more, page metadata, and embedded sub_comments.",
             "",
             "Example:",
-            "xhs-silent comments \"https://www.xiaohongshu.com/explore/...?...\" --limit 5",
-            "xhs-silent --json comments \"https://www.xiaohongshu.com/explore/...?...\" --limit 20 --all-pages",
+            "xhs-cli comments \"https://www.xiaohongshu.com/explore/...?...\" --limit 5",
+            "xhs-cli --json comments \"https://www.xiaohongshu.com/explore/...?...\" --limit 20 --all-pages",
         ],
     },
     "profiles": {
@@ -92,10 +92,10 @@ HELP_TOPICS = {
         "body": [
             f"Default profile: {DEFAULT_PROFILE}",
             "Override by profile directory:",
-            "xhs-silent --profile \"Profile 2\" check-cookie",
+            "xhs-cli --profile \"Profile 2\" check-cookie",
             "",
             "Resolve by Google account email:",
-            "xhs-silent --profile-email \"oasismetallicablur@gmail.com\" check-cookie",
+            "xhs-cli --profile-email \"oasismetallicablur@gmail.com\" check-cookie",
         ],
     },
     "json": {
@@ -104,7 +104,7 @@ HELP_TOPICS = {
             "Add --json to any command to get structured output that is easier for scripts and agents to parse.",
             "",
             "Example:",
-            "xhs-silent --json search \"深圳 咖啡\" --limit 3",
+            "xhs-cli --json search \"深圳 咖啡\" --limit 3",
         ],
     },
 }
@@ -112,8 +112,8 @@ HELP_TOPICS = {
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="xhs-silent",
-        description="Silent Xiaohongshu CLI that reuses the local Chrome profile on macOS.",
+        prog="xhs-cli",
+        description="Xiaohongshu CLI that reuses the local Chrome profile on macOS.",
     )
     parser.add_argument("--profile", default=DEFAULT_PROFILE, help=f"Chrome profile directory name. Default: {DEFAULT_PROFILE}.")
     parser.add_argument("--profile-email", help="Resolve a Chrome profile by the signed-in Google account email.")
@@ -307,7 +307,7 @@ def _append_login_hint(
 
 
 def _handle_error(
-    exc: XhsSilentError,
+    exc: XhsCliError,
     *,
     launcher: ChromeLoginLauncher,
     as_json: bool,
@@ -401,8 +401,8 @@ async def run_async(
             )
             print_payload(comments if args.json else format_comments(comments), as_json=args.json, stdout=stdout)
             return 0
-    except XhsSilentError as exc:
-        logger.exception("xhs-silent command failed")
+    except XhsCliError as exc:
+        logger.exception("xhs-cli command failed")
         return _handle_error(exc, launcher=launcher, as_json=args.json, stderr=stderr)
 
     print(f"Unknown command: {args.command}", file=stderr)

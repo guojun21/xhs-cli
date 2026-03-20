@@ -1,4 +1,4 @@
-# xhs-mcp-silent
+# xhs-cli
 
 静默版小红书 CLI。它不会执行 Playwright/Chromium 自动化，而是直接复用 macOS Chrome 本地 profile 里的登录态。
 
@@ -33,12 +33,12 @@ V1 只做只读能力，不支持评论发布和发帖。CLI 在检测到 `guest
 ## 快速开始
 
 ```bash
-git clone https://github.com/guojun21/xhs-mcp-silent.git
-cd xhs-mcp-silent
+git clone https://github.com/guojun21/xhs-cli.git
+cd xhs-cli
 uv venv --python 3.12
 source .venv/bin/activate
 uv pip install -e .
-xhs-silent check-cookie
+xhs-cli check-cookie
 ```
 
 当前仓库默认 profile 是 `Profile 1`，也就是 `oasismetallicablur@gmail.com` 对应的 Chrome 目录。
@@ -46,41 +46,41 @@ xhs-silent check-cookie
 也可以覆盖默认 profile：
 
 ```bash
-xhs-silent --profile "Profile 1" check-cookie
+xhs-cli --profile "Profile 1" check-cookie
 ```
 
 也可以直接按邮箱选 profile：
 
 ```bash
-xhs-silent --profile-email "oasismetallicablur@gmail.com" check-cookie
+xhs-cli --profile-email "oasismetallicablur@gmail.com" check-cookie
 ```
 
 紧急调试时允许直接传 cookie：
 
 ```bash
-xhs-silent --cookie "a1=...; webId=..." check-cookie
+xhs-cli --cookie "a1=...; webId=..." check-cookie
 ```
 
 搜索与抓取：
 
 ```bash
-xhs-silent search "深圳 咖啡" --limit 5
-xhs-silent note "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy"
-xhs-silent comments "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy" --limit 5
+xhs-cli search "深圳 咖啡" --limit 5
+xhs-cli note "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy"
+xhs-cli comments "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy" --limit 5
 ```
 
 手动打开登录页：
 
 ```bash
-xhs-silent login
+xhs-cli login
 ```
 
 结构化输出：
 
 ```bash
-xhs-silent --json search "深圳 咖啡" --limit 3
-xhs-silent --json note "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy"
-xhs-silent --json comments "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy" --limit 20 --all-pages
+xhs-cli --json search "深圳 咖啡" --limit 3
+xhs-cli --json note "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy"
+xhs-cli --json comments "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy" --limit 20 --all-pages
 ```
 
 ## CLI 帮助
@@ -88,18 +88,18 @@ xhs-silent --json comments "https://www.xiaohongshu.com/explore/xxxx?xsec_token=
 先看总览：
 
 ```bash
-xhs-silent help
+xhs-cli help
 ```
 
 按主题查看：
 
 ```bash
-xhs-silent help check-cookie
-xhs-silent help search
-xhs-silent help note
-xhs-silent help comments
-xhs-silent help profiles
-xhs-silent help json
+xhs-cli help check-cookie
+xhs-cli help search
+xhs-cli help note
+xhs-cli help comments
+xhs-cli help profiles
+xhs-cli help json
 ```
 
 ## 命令说明
@@ -109,8 +109,8 @@ xhs-silent help json
 检查当前 profile 的小红书登录态。若 cookie 缺失、过期，或只是 guest session，会自动尝试打开正确的 Chrome profile 并跳到小红书首页。
 
 ```bash
-xhs-silent check-cookie
-xhs-silent --json check-cookie
+xhs-cli check-cookie
+xhs-cli --json check-cookie
 ```
 
 ### `login`
@@ -118,8 +118,8 @@ xhs-silent --json check-cookie
 强制打开小红书首页到当前 profile。命令会显式传入 `--user-data-dir` 和 `--profile-directory`，避免 macOS 打开到错误 profile。
 
 ```bash
-xhs-silent login
-xhs-silent login --url https://www.xiaohongshu.com/explore
+xhs-cli login
+xhs-cli login --url https://www.xiaohongshu.com/explore
 ```
 
 ### `search`
@@ -127,8 +127,8 @@ xhs-silent login --url https://www.xiaohongshu.com/explore
 按关键词搜索笔记。输出里的链接自带 `xsec_token`，后续拿这个完整 URL 去跑 `note` 和 `comments`。
 
 ```bash
-xhs-silent search "深圳 咖啡" --limit 5
-xhs-silent --json search "深圳 约会 餐厅" --limit 10
+xhs-cli search "深圳 咖啡" --limit 5
+xhs-cli --json search "深圳 约会 餐厅" --limit 10
 ```
 
 ### `note`
@@ -144,8 +144,8 @@ xhs-silent --json search "深圳 约会 餐厅" --limit 10
 - 原始 `raw_note_card`
 
 ```bash
-xhs-silent note "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy"
-xhs-silent --json note "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy"
+xhs-cli note "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy"
+xhs-cli --json note "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy"
 ```
 
 ### `comments`
@@ -167,18 +167,18 @@ xhs-silent --json note "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy
 - `--all-pages`: 自动翻页直到达到 `--limit` 或服务器没有更多评论
 
 ```bash
-xhs-silent comments "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy" --limit 5
-xhs-silent --json comments "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy" --limit 10
-xhs-silent --json comments "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy" --limit 20 --all-pages
+xhs-cli comments "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy" --limit 5
+xhs-cli --json comments "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy" --limit 10
+xhs-cli --json comments "https://www.xiaohongshu.com/explore/xxxx?xsec_token=yyyy" --limit 20 --all-pages
 ```
 
 ## 典型工作流
 
 ```bash
-xhs-silent check-cookie
-xhs-silent --json search "深圳 咖啡" --limit 5
-xhs-silent --json note "<搜索结果里的完整 URL>"
-xhs-silent --json comments "<搜索结果里的完整 URL>" --limit 5
+xhs-cli check-cookie
+xhs-cli --json search "深圳 咖啡" --limit 5
+xhs-cli --json note "<搜索结果里的完整 URL>"
+xhs-cli --json comments "<搜索结果里的完整 URL>" --limit 5
 ```
 
 ## 环境变量
@@ -198,14 +198,14 @@ xhs-silent --json comments "<搜索结果里的完整 URL>" --limit 5
 当前默认 profile 是 `Profile 1`，对应 `oasismetallicablur@gmail.com`。如果需要临时切换：
 
 ```bash
-xhs-silent --profile "Profile 2" check-cookie
-xhs-silent --profile-email "oasismetallicablur@gmail.com" check-cookie
+xhs-cli --profile "Profile 2" check-cookie
+xhs-cli --profile-email "oasismetallicablur@gmail.com" check-cookie
 ```
 
 ## 测试
 
 ```bash
-cd xhs-mcp-silent
+cd xhs-cli
 source .venv/bin/activate
 pytest
 ```

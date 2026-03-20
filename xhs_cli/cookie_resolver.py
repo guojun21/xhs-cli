@@ -12,7 +12,7 @@ from pathlib import Path
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import PBKDF2
 
-from .models import CookieBundle, ErrorCode, XhsSilentError
+from .models import CookieBundle, ErrorCode, XhsCliError
 
 DEFAULT_CHROME_DIR = Path.home() / "Library/Application Support/Google/Chrome"
 DEFAULT_PROFILE = "Profile 1"
@@ -41,7 +41,7 @@ class ChromeCookieResolver:
         if self.cookie_override:
             cookies = self._parse_cookie_string(self.cookie_override)
             if not cookies:
-                raise XhsSilentError(ErrorCode.COOKIE_MISSING, "XHS_COOKIE is set but empty after parsing.")
+                raise XhsCliError(ErrorCode.COOKIE_MISSING, "XHS_COOKIE is set but empty after parsing.")
             return CookieBundle(
                 cookies=cookies,
                 source="env:XHS_COOKIE",
@@ -50,14 +50,14 @@ class ChromeCookieResolver:
             )
 
         if sys.platform != "darwin":
-            raise XhsSilentError(
+            raise XhsCliError(
                 ErrorCode.COOKIE_MISSING,
-                "xhs-mcp-silent only supports macOS Chrome cookie reuse in V1.",
+                "xhs-cli only supports macOS Chrome cookie reuse in V1.",
                 details={"platform": sys.platform},
             )
 
         if not self.cookie_path.exists():
-            raise XhsSilentError(
+            raise XhsCliError(
                 ErrorCode.COOKIE_MISSING,
                 "Chrome Cookies DB not found. Log in to xiaohongshu.com in Chrome first.",
                 details={"cookie_path": str(self.cookie_path)},
@@ -66,7 +66,7 @@ class ChromeCookieResolver:
         key = self._get_chrome_safe_storage_key()
         cookies = self._read_cookies_from_db(key)
         if not cookies:
-            raise XhsSilentError(
+            raise XhsCliError(
                 ErrorCode.COOKIE_MISSING,
                 "No Xiaohongshu cookies found in the selected Chrome profile.",
                 details={"cookie_path": str(self.cookie_path), "profile": self.profile},
@@ -89,14 +89,14 @@ class ChromeCookieResolver:
                 check=False,
             )
         except Exception as exc:
-            raise XhsSilentError(
+            raise XhsCliError(
                 ErrorCode.COOKIE_MISSING,
                 "Failed to query Chrome Safe Storage from macOS Keychain.",
                 details={"error": str(exc)},
             ) from exc
 
         if result.returncode != 0 or not result.stdout.strip():
-            raise XhsSilentError(
+            raise XhsCliError(
                 ErrorCode.COOKIE_MISSING,
                 "Chrome Safe Storage key is unavailable in macOS Keychain.",
                 details={"stderr": result.stderr.strip()},
@@ -134,10 +134,10 @@ class ChromeCookieResolver:
                 return resolved
             finally:
                 conn.close()
-        except XhsSilentError:
+        except XhsCliError:
             raise
         except Exception as exc:
-            raise XhsSilentError(
+            raise XhsCliError(
                 ErrorCode.COOKIE_MISSING,
                 "Failed to read Chrome cookies database.",
                 details={"cookie_path": str(self.cookie_path), "error": str(exc)},

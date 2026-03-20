@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from xhs_mcp_silent.models import CommentPage, NoteDetail
-from xhs_mcp_silent.xhs_api import SEARCH_DEFAULT_FILTERS, XhsApi
+from xhs_cli.models import CommentPage, NoteDetail
+from xhs_cli.xhs_api import SEARCH_DEFAULT_FILTERS, XhsApi
 
 
 class FakeApi(XhsApi):
@@ -119,7 +119,7 @@ class FakeApi(XhsApi):
         raise AssertionError(f"unexpected uri: {uri}")
 
     async def check_cookie(self):  # type: ignore[override]
-        from xhs_mcp_silent.models import CheckCookieResult
+        from xhs_cli.models import CheckCookieResult
 
         return CheckCookieResult(valid=True, source="test", profile="Default", cookie_path="/tmp/Cookies")
 
@@ -182,7 +182,7 @@ class SearchPayloadApi(XhsApi):
         raise AssertionError(f"unexpected uri: {uri}")
 
     async def check_cookie(self):  # type: ignore[override]
-        from xhs_mcp_silent.models import CheckCookieResult
+        from xhs_cli.models import CheckCookieResult
 
         return CheckCookieResult(valid=True, source="test", profile="Profile 1", cookie_path="/tmp/Cookies")
 
@@ -243,7 +243,7 @@ class GuestCheckApi(XhsApi):
         class _Resolver:
             @staticmethod
             def resolve():
-                from xhs_mcp_silent.models import CookieBundle
+                from xhs_cli.models import CookieBundle
 
                 return CookieBundle(
                     cookies={"a1": "v"},

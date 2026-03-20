@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from xhs_mcp_silent.cli import (
+from xhs_cli.cli import (
     build_help_text,
     build_parser,
     format_comments,
@@ -14,7 +14,7 @@ from xhs_mcp_silent.cli import (
     format_search_results,
     run_async,
 )
-from xhs_mcp_silent.models import CheckCookieResult, CommentItem, CommentPage, NoteDetail, NoteSummary, XhsSilentError
+from xhs_cli.models import CheckCookieResult, CommentItem, CommentPage, NoteDetail, NoteSummary, XhsCliError
 
 
 class FakeLauncher:
@@ -83,7 +83,7 @@ class SearchApi:
 
 class ErrorApi:
     async def search_notes(self, keywords: str, limit: int = 10):
-        raise XhsSilentError("COOKIE_EXPIRED", "need login")
+        raise XhsCliError("COOKIE_EXPIRED", "need login")
 
 
 def test_format_search_results() -> None:

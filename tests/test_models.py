@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from xhs_mcp_silent.models import NoteUrl, XhsSilentError
+from xhs_cli.models import NoteUrl, XhsCliError
 
 
 def test_note_url_parse_success() -> None:
@@ -13,6 +13,6 @@ def test_note_url_parse_success() -> None:
 
 
 def test_note_url_parse_requires_token() -> None:
-    with pytest.raises(XhsSilentError):
+    with pytest.raises(XhsCliError):
         NoteUrl.parse("https://www.xiaohongshu.com/explore/680a25a4000000001c02d251")
 

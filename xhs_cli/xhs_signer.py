@@ -7,7 +7,7 @@ from typing import Any
 
 import execjs
 
-from .models import ErrorCode, XhsSilentError
+from .models import ErrorCode, XhsCliError
 
 
 class XhsSigner:
@@ -26,7 +26,7 @@ class XhsSigner:
                 "x-t": str(parsed["X-t"]),
             }
         except Exception as exc:
-            raise XhsSilentError(
+            raise XhsCliError(
                 ErrorCode.SIGN_FAILED,
                 "Failed to generate x-s/x-t signature.",
                 details={"uri": uri, "error": str(exc)},

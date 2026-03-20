@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from xhs_mcp_silent.models import XhsSilentError
-from xhs_mcp_silent.profile_resolver import ChromeProfileResolver
+from xhs_cli.models import XhsCliError
+from xhs_cli.profile_resolver import ChromeProfileResolver
 
 
 def test_resolve_profile_by_email(tmp_path: Path) -> None:
@@ -29,5 +29,5 @@ def test_resolve_profile_by_missing_email_raises(tmp_path: Path) -> None:
     chrome_dir.mkdir()
     (chrome_dir / "Local State").write_text('{"profile":{"info_cache":{}}}', encoding="utf-8")
     resolver = ChromeProfileResolver(chrome_dir=chrome_dir)
-    with pytest.raises(XhsSilentError):
+    with pytest.raises(XhsCliError):
         resolver.resolve_profile("missing@example.com")

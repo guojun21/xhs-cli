@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from Crypto.Cipher import AES
 
-from xhs_mcp_silent.cookie_resolver import ChromeCookieResolver
-from xhs_mcp_silent.models import ErrorCode, XhsSilentError
+from xhs_cli.cookie_resolver import ChromeCookieResolver
+from xhs_cli.models import ErrorCode, XhsCliError
 
 
 def encrypt_cookie_value(value: str, key: bytes, host_key: str) -> bytes:
@@ -30,7 +30,7 @@ def test_cookie_missing_path_raises() -> None:
     )
     try:
         resolver.resolve()
-    except XhsSilentError as exc:
+    except XhsCliError as exc:
         assert exc.code == ErrorCode.COOKIE_MISSING
         assert "Chrome Cookies DB not found" in exc.message
     else:

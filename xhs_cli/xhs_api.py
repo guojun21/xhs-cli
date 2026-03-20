@@ -17,7 +17,7 @@ from .models import (
     NoteDetail,
     NoteSummary,
     NoteUrl,
-    XhsSilentError,
+    XhsCliError,
     format_millis_timestamp,
 )
 from .xhs_signer import XhsSigner
@@ -264,10 +264,10 @@ class XhsApi:
                     quote=False,
                 )
                 body = response.content
-        except XhsSilentError:
+        except XhsCliError:
             raise
         except Exception as exc:
-            raise XhsSilentError(
+            raise XhsCliError(
                 ErrorCode.XHS_API_FAILED,
                 "Request to Xiaohongshu API failed.",
                 details={"uri": uri, "error": str(exc)},
@@ -276,7 +276,7 @@ class XhsApi:
         try:
             payload = json.loads(body)
         except Exception as exc:
-            raise XhsSilentError(
+            raise XhsCliError(
                 ErrorCode.XHS_API_FAILED,
                 "Xiaohongshu API returned non-JSON content.",
                 details={"uri": uri, "status_code": response.status_code, "error": str(exc)},
@@ -290,7 +290,7 @@ class XhsApi:
             return payload
         raise await self._api_error_from_payload(payload, "Xiaohongshu API returned an error.")
 
-    async def _api_error_from_payload(self, payload: dict[str, Any], fallback_message: str) -> XhsSilentError:
+    async def _api_error_from_payload(self, payload: dict[str, Any], fallback_message: str) -> XhsCliError:
         cookie_status = await self.check_cookie()
         if not cookie_status.valid:
             message = "Chrome profile cookies are expired. Log in to xiaohongshu.com in Chrome and retry."
@@ -299,12 +299,12 @@ class XhsApi:
                     "Chrome profile contains a guest Xiaohongshu session, not a logged-in account. "
                     "Log in to xiaohongshu.com in Chrome and retry."
                 )
-            return XhsSilentError(
+            return XhsCliError(
                 ErrorCode.COOKIE_EXPIRED,
                 message,
                 details=cookie_status.to_dict(),
             )
-        return XhsSilentError(
+        return XhsCliError(
             ErrorCode.XHS_API_FAILED,
             str(payload.get("msg") or payload.get("message") or fallback_message),
             details={"payload": payload},

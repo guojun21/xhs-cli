@@ -14,7 +14,7 @@ class ErrorCode(str, Enum):
     XHS_API_FAILED = "XHS_API_FAILED"
 
 
-class XhsSilentError(RuntimeError):
+class XhsCliError(RuntimeError):
     def __init__(
         self,
         code: ErrorCode | str,
@@ -56,7 +56,7 @@ class NoteUrl:
         note_id = parsed.path.rstrip("/").split("/")[-1]
         xsec_token = parse_qs(parsed.query).get("xsec_token", [""])[0]
         if not note_id or not xsec_token:
-            raise XhsSilentError(
+            raise XhsCliError(
                 ErrorCode.XHS_API_FAILED,
                 "URL must include both note id and xsec_token.",
                 details={"url": value},

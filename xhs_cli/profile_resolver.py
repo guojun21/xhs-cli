@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from .cookie_resolver import DEFAULT_CHROME_DIR
-from .models import ErrorCode, XhsSilentError
+from .models import ErrorCode, XhsCliError
 
 
 class ChromeProfileResolver:
@@ -18,7 +18,7 @@ class ChromeProfileResolver:
     def resolve_profile(self, profile_or_email: str) -> str:
         value = profile_or_email.strip()
         if not value:
-            raise XhsSilentError(ErrorCode.COOKIE_MISSING, "Chrome profile cannot be empty.")
+            raise XhsCliError(ErrorCode.COOKIE_MISSING, "Chrome profile cannot be empty.")
         if "@" not in value:
             return value
 
@@ -28,7 +28,7 @@ class ChromeProfileResolver:
             if str((payload or {}).get("user_name") or "").strip().lower() == value.lower():
                 return profile_name
 
-        raise XhsSilentError(
+        raise XhsCliError(
             ErrorCode.COOKIE_MISSING,
             "Chrome profile email was not found in Local State.",
             details={"email": value, "local_state_path": str(self.local_state_path)},
@@ -36,7 +36,7 @@ class ChromeProfileResolver:
 
     def _read_local_state(self) -> dict:
         if not self.local_state_path.exists():
-            raise XhsSilentError(
+            raise XhsCliError(
                 ErrorCode.COOKIE_MISSING,
                 "Chrome Local State file was not found.",
                 details={"local_state_path": str(self.local_state_path)},
@@ -44,7 +44,7 @@ class ChromeProfileResolver:
         try:
             return json.loads(self.local_state_path.read_text(encoding="utf-8"))
         except Exception as exc:
-            raise XhsSilentError(
+            raise XhsCliError(
                 ErrorCode.COOKIE_MISSING,
                 "Failed to read Chrome Local State.",
                 details={"local_state_path": str(self.local_state_path), "error": str(exc)},
